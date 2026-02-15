@@ -1,0 +1,47 @@
+# Git
+.git
+.gitignore
+
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# Environment
+.env.local
+.env.*.local
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+dist
+build
+
+# Frontend
+frontend/vite-project/node_modules
+frontend/vite-project/dist
+
+# Documentation
+*.md
+TESTING_GUIDE.md
+ARCHITECTURE.md
+REDIS_SETUP.md
+
+# Test/Coverage
+coverage
+.nyc_output
+
+# Temporary
+tmp
+temp
+*.log

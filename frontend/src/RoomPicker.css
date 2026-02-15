@@ -1,0 +1,207 @@
+.room-picker-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a3f 25%, #0f1a2e 50%, #1a0f3f 75%, #0f0f23 100%);
+  background-attachment: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(8px);
+}
+
+.room-picker-container {
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
+}
+
+.room-picker-content {
+  background: linear-gradient(135deg, rgba(20, 20, 45, 0.8), rgba(30, 20, 60, 0.6));
+  border: 1px solid rgba(100, 150, 255, 0.3);
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(20px);
+}
+
+.room-picker-title {
+  font-size: 32px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff 0%, #a8d8ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  text-align: center;
+  letter-spacing: -0.5px;
+}
+
+.room-picker-subtitle {
+  font-size: 14px;
+  color: #b0c4ff;
+  text-align: center;
+  margin-bottom: 32px;
+  font-weight: 500;
+}
+
+.room-picker-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #c0d9ff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.room-input {
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(60, 60, 100, 0.6), rgba(50, 50, 80, 0.4));
+  border: 1px solid rgba(100, 150, 255, 0.4);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.room-input:focus {
+  outline: none;
+  border-color: rgba(100, 150, 255, 0.8);
+  background: linear-gradient(135deg, rgba(80, 100, 140, 0.8), rgba(70, 70, 110, 0.6));
+  box-shadow: 0 0 0 3px rgba(100, 150, 255, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.05);
+}
+
+.room-input::placeholder {
+  color: #888caa;
+}
+
+.error-message {
+  font-size: 12px;
+  color: #ff6b9d;
+  margin-top: -4px;
+  font-weight: 600;
+}
+
+.button-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.btn {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #5eff87 0%, #4ec919 100%);
+  color: #0a0a15;
+  box-shadow: 0 4px 15px rgba(94, 255, 135, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(94, 255, 135, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary:active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(94, 255, 135, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, rgba(80, 100, 140, 0.5), rgba(70, 70, 110, 0.4));
+  color: #c0d9ff;
+  border: 1px solid rgba(100, 150, 255, 0.4);
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(135deg, rgba(100, 120, 160, 0.6), rgba(90, 90, 130, 0.5));
+  border-color: rgba(100, 150, 255, 0.6);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(100, 150, 255, 0.2);
+}
+
+.btn-secondary:active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(100, 150, 255, 0.15);
+}
+
+.room-picker-info {
+  background: linear-gradient(135deg, rgba(94, 255, 135, 0.08), rgba(78, 201, 25, 0.05));
+  border: 1px solid rgba(94, 255, 135, 0.25);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-top: 16px;
+}
+
+.info-text {
+  font-size: 12px;
+  color: #b0c4ff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.info-icon {
+  flex-shrink: 0;
+  font-size: 14px;
+  color: #5eff87;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .room-picker-content {
+    padding: 30px 20px;
+  }
+
+  .room-picker-title {
+    font-size: 24px;
+  }
+
+  .button-group {
+    grid-template-columns: 1fr;
+  }
+
+  .room-input {
+    font-size: 16px;
+  }
+}
