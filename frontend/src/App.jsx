@@ -137,6 +137,11 @@ function App() {
     // Don't connect if no room selected
     if (!roomId) return;
 
+    // Check if socket already exists for this room (prevent duplicate connections)
+    if (socket && socket.connected && socket.roomId === roomId) {
+      return;
+    }
+
     // Generate unique user ID and get username
     const newUserId = Math.random().toString(36).substr(2, 9);
     userIdRef.current = newUserId;
@@ -145,12 +150,14 @@ function App() {
     usernameRef.current = username;
 
     // Connect to Socket.IO server
-    const newSocket = io('http://localhost:3000', {
+    const newSocket = io('http://localhost:4000', {
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
       reconnectionAttempts: 5
     });
+
+    newSocket.roomId = roomId; // Track which room this socket is for
 
     newSocket.on('connect', () => {
       console.log('Socket.IO connected:', newSocket.id);
@@ -178,25 +185,28 @@ function App() {
     });
 
     newSocket.on('content-changed', (data) => {
-      console.log('Operation received:', data);
-      // Apply remote operation using the current content reference
-      let newContent = contentRef.current;
+      console.log('Operation received from server:', data);
+      // Only apply if NOT from the current user
+      if (data.userId !== newUserId) {
+        // Apply remote operation using the current content reference
+        let newContent = contentRef.current;
 
-      if (data.operation.type === 'insert') {
-        newContent =
-          newContent.slice(0, data.operation.position) +
-          data.operation.text +
-          newContent.slice(data.operation.position);
-      } else if (data.operation.type === 'delete') {
-        newContent =
-          newContent.slice(0, data.operation.position) +
-          newContent.slice(data.operation.position + data.operation.length);
+        if (data.operation.type === 'insert') {
+          newContent =
+            newContent.slice(0, data.operation.position) +
+            data.operation.text +
+            newContent.slice(data.operation.position);
+        } else if (data.operation.type === 'delete') {
+          newContent =
+            newContent.slice(0, data.operation.position) +
+            newContent.slice(data.operation.position + data.operation.length);
+        }
+
+        contentRef.current = newContent;
+        setDocumentContent(newContent);
+        setVersion(data.version);
+        versionRef.current = data.version;
       }
-
-      contentRef.current = newContent;
-      setDocumentContent(newContent);
-      setVersion(data.version);
-      versionRef.current = data.version;
     });
 
     newSocket.on('user-joined', (data) => {

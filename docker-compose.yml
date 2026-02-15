@@ -6,7 +6,7 @@ services:
     build: .
     container_name: collaborative-editor-server-1
     ports:
-      - "3000:3000"
+      - "4000:3000"
     environment:
       PORT: 3000
       NODE_ENV: development
@@ -31,7 +31,7 @@ services:
     build: .
     container_name: collaborative-editor-server-2
     ports:
-      - "3001:3000"
+      - "4001:3000"
     environment:
       PORT: 3000
       NODE_ENV: development
@@ -56,7 +56,7 @@ services:
     build: .
     container_name: collaborative-editor-server-3
     ports:
-      - "3002:3000"
+      - "4002:3000"
     environment:
       PORT: 3000
       NODE_ENV: development

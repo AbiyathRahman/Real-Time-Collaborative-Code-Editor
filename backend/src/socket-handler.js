@@ -7,6 +7,7 @@ const { getRedisClient } = require('./redis/client');
 
 const rooms = new Map(); // Structure: { roomId -> { document, pendingOps: [], cursors: Map<socketId, cursor> } }
 let redisClient = null;
+const SERVER_ID = Math.random().toString(36).substr(2, 9); // Unique ID for this server instance
 
 function getUserColor(userId) {
     const colors = ['#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6'];
@@ -104,16 +105,27 @@ function handleSocket(io) {
                     if (redisClient) {
                         const redisChannelName = `room:${roomId}:operations`;
                         redisClient.subscribe(redisChannelName, (data) => {
-                            console.log(`Received operation from Redis for room ${roomId}:`, data);
-                            // Broadcast to all local Socket.IO clients in this room
-                            // Exclude the user who sent it (if on this server)
-                            io.to(roomId).emit('content-changed', {
-                                operation: data.operation,
-                                userId: data.userId,
-                                username: data.username,
-                                userColor: data.userColor,
-                                version: data.version
-                            });
+                            console.log(`Received operation from Redis for room ${roomId}`);
+                            // Broadcast to all clients in this room EXCEPT the original sender
+                            // This works because we included senderSocketId in the published data
+                            const sockets = io.sockets.adapter.rooms.get(roomId);
+                            if (sockets) {
+                                sockets.forEach(socketId => {
+                                    // Skip the original sender
+                                    if (socketId !== data.senderSocketId) {
+                                        const clientSocket = io.sockets.sockets.get(socketId);
+                                        if (clientSocket) {
+                                            clientSocket.emit('content-changed', {
+                                                operation: data.operation,
+                                                userId: data.userId,
+                                                username: data.username,
+                                                userColor: data.userColor,
+                                                version: data.version
+                                            });
+                                        }
+                                    }
+                                });
+                            }
                         }).catch(err => {
                             console.error(`Failed to subscribe to Redis channel ${redisChannelName}:`, err);
                         });
@@ -223,19 +235,13 @@ function handleSocket(io) {
                 // Update room state
                 roomData.document = { content: newContent, version: newVersion };
 
-                // Broadcast transformed operation to all users except sender
-                socket.to(roomId).emit('content-changed', {
-                    operation: transformedOp,
-                    userId: socket.userId,
-                    username: socket.username,
-                    userColor: socket.userColor,
-                    version: newVersion
-                });
-
-                // Publish to Redis so other servers can broadcast to their clients
+                // Publish to Redis so ALL servers (including this one) can broadcast to their clients
+                // This ensures consistency: remote clients get it the same way as multi-server
                 if (redisClient) {
                     const redisChannelName = `room:${roomId}:operations`;
                     await redisClient.publish(redisChannelName, {
+                        serverId: SERVER_ID,
+                        senderSocketId: socket.id,  // Include sender socket ID
                         operation: transformedOp,
                         userId: socket.userId,
                         username: socket.username,
@@ -243,6 +249,16 @@ function handleSocket(io) {
                         version: newVersion
                     });
                     console.log(`Published operation to Redis channel ${redisChannelName}`);
+                } else {
+                    // Fallback: if Redis not available, broadcast directly
+                    console.log('Redis not available, using direct socket.to() broadcast');
+                    socket.to(roomId).emit('content-changed', {
+                        operation: transformedOp,
+                        userId: socket.userId,
+                        username: socket.username,
+                        userColor: socket.userColor,
+                        version: newVersion
+                    });
                 }
 
                 // Clear pending operations since all clients will now have this state
