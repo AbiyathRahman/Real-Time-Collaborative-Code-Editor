@@ -149,8 +149,11 @@ function App() {
     const username = `User-${Math.floor(Math.random() * 1000)}`;
     usernameRef.current = username;
 
-    // Connect to Socket.IO server
-    const newSocket = io('http://localhost:4000', {
+    // Connect to Socket.IO server (use env variable or fallback to localhost for dev)
+    const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:4000';
+    console.log('🔗 Socket URL:', socketUrl); // Debug log
+    console.log('🔍 VITE_SOCKET_URL env:', import.meta.env.VITE_SOCKET_URL); // Debug log
+    const newSocket = io(socketUrl, {
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
